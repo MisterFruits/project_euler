@@ -1,4 +1,6 @@
 def primes(max):
+    if max <= 2:
+        return
     seq = []
     yield 2
     for i in range(3,max,2):
@@ -8,7 +10,7 @@ def primes(max):
 
 def factorize(integer):
     factorization = []
-    primesgenerator = primes(int(integer**0.5))
+    primesgenerator = primes(integer+1)
     while integer > 1:
         nextprime = next(primesgenerator)
         while integer % nextprime == 0:
