@@ -1,12 +1,17 @@
 def _primes():
     seq = []
     yield 2
-    i = 3
+    yield 3
+    i = 1
     while True:
-        if all(map(lambda x:i % x != 0, (el for el in seq if el**0.5 < i))):
+        i += 4
+        if all(map(lambda x:i % x != 0, (el for el in seq if el <= i**0.5))):
             yield i
             seq.append(i)
         i += 2
+        if all(map(lambda x:i % x != 0, (el for el in seq if el <= i**0.5))):
+            yield i
+            seq.append(i)
 
 def primes(maximum=float('inf'), nb_max=float('inf')):
     primesgenerator = _primes()

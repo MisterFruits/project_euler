@@ -25,6 +25,8 @@ def test_primes():
     assert [el for el in primes(maximum=10, nb_max=2)] == [2, 3]
     assert [el for el in primes(maximum=3, nb_max=100)] == [2]
 
+    assert [el for el in primes(nb_max=10001)][-1] == 104743
+
 
 def test_factorize():
     assert factorize(5) == [5]
