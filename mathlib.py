@@ -1,3 +1,5 @@
+import functools
+
 def _primes():
     seq = []
     yield 2
@@ -31,3 +33,6 @@ def factorize(integer):
             integer = integer / nextprime
             factorization.append(nextprime)
     return factorization
+
+def mul(aniterable):
+    return functools.reduce(lambda x,y:x*y, aniterable)
