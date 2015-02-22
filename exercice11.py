@@ -20,40 +20,72 @@ data = """
 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"""
 
-SIZE = 20
-ADJACENCY_OFFSET = [-SIZE-1, -SIZE, -SIZE+1,
-                    -1     , 0    , 1      ,
-                    SIZE-1 , SIZE , SIZE+1 ]
-BASE_ADJACENCY = [True , True , True ,
-                  True , False, True ,
-                  True , True , True ]
-TOP_ADJACENCY = [False, False, False,
-                 True , False, True ,
-                 True , True , True ]
-BOTTOM_ADJACENCY = [True , True , True ,
-                    True , False, True ,
-                    False , False , False ]
-LEFT_ADJACENCY = [False, True,  True ,
-                  False, False, True ,
-                  False, True,  True ]
-RIGHT_ADJACENCY = [True , True , False ,
-                   True , False, False ,
-                   True , True , False ]
-ADJACENCIES_BY_INDEX = [[BASE_ADJACENCY] * SIZE**2]
-print(len(ADJACENCIES_BY_INDEX))
+class GridTopologie(object):
+    BASE_ADJACENCY = [True , True , True ,
+                      True , False, True ,
+                      True , True , True ]
+    TOP_ADJACENCY = [False, False, False,
+                     True , True , True ,
+                     True , True , True ]
+    BOTTOM_ADJACENCY = [True , True , True ,
+                        True , True , True ,
+                        False, False, False]
+    LEFT_ADJACENCY = [False, True, True ,
+                      False, True, True ,
+                      False, True, True ]
+    RIGHT_ADJACENCY = [True , True , False ,
+                       True , False, False ,
+                       True , True , False ]
 
-for index, adjacencies in enumerate(ADJACENCIES_BY_INDEX):
-    if index < SIZE:
-        adjacencies.append(TOP_ADJACENCY)
-    if index >= SIZE**2 - SIZE:
-        adjacencies.append(BOTTOM_ADJACENCY)
-    if index % SIZE == 0:
-        adjacencies.append(LEFT_ADJACENCY)
-    if index % SIZE == SIZE:
-        adjacencies.append(RIGHT_ADJACENCY)
-ADJACENT_BY_INDEX = []
-for index in range(SIZE):
-    ADJACENT_BY_INDEX.append([index+offset for offset in ADJACENCY_OFFSET])
+    def __init__(self, lenght, width):
+        super(GridTopologie, self).__init__()
+        self.lenght = lenght
+        self.width = width
+        self.size = lenght*width
+
+        self.adjacencies_by_index = [[GridTopologie.BASE_ADJACENCY] for el in range(self.size)]
+        for index, adjacencies in enumerate(self.adjacencies_by_index):
+            if index < self.width:
+                adjacencies.append(GridTopologie.TOP_ADJACENCY)
+            if index >= self.size - self.width:
+                adjacencies.append(GridTopologie.BOTTOM_ADJACENCY)
+            if index % self.width == 0:
+                adjacencies.append(GridTopologie.LEFT_ADJACENCY)
+            if index % width == width - 1:
+                adjacencies.append(GridTopologie.RIGHT_ADJACENCY)
+
+        adjacency_offset = [-width-1, -width, -width+1,
+                            -1      , 0     ,  1      ,
+                            width-1 , width , width+1 ]
+        self.adjacent_by_index = []
+        for index in range(self.size):
+            self.adjacent_by_index.append([index+offset for offset in adjacency_offset])
+
+    def are_adjacents(self, indexes):
+        if len(indexes) < 2:
+            return True
+        else:
+            return _are_adjacents(indexes[0], indexes[1]) and \
+                   are_adjacents(indexes[1:])
+
+    def _are_adjacents(self, i1, i2):
+        try:
+            adj_table_index = self.adjacent_by_index[i1].index(i2)
+            return all((el[adj_table_index]
+                      for el in self.adjacencies_by_index[i1]))
+        except ValueError:
+            return False
+
+    def form_gen(self, step, size=4):
+        for form_index in range(SIZE**2):
+            next_form = [form_index+step*k for k in range(size)]
+            in_range = (0<=index<SIZE**2 for index in next_form)
+            if all(in_range) and self.are_adjacents(next_form):
+                yield next_form
+
+SIZE = 20
+
+
 
 
 
@@ -71,30 +103,8 @@ def linegen(data, line_nb, hl):
     for index in range(start, start+SIZE):
         yield '**' if index in hl else data[index]
 
-def form_gen(step, size=4):
-    for form_index in range(SIZE**2):
-        next_form = [form_index+step*k for k in range(size)]
-        in_range = (0<=index<SIZE for index in next_form)
-        if all(in_range) and are_adjacents(next_form):
-            yield next_form
 
-def are_adjacents(indexes):
-    if len(indexes) < 2:
-        return true
-    else:
-        return _are_adjacents(indexes[0], indexes[1]) and \
-               are_adjacents(indexes[1:])
 
-def _are_adjacents(i1, i2):
-    print (i1, i2)
-    print (len(ADJACENT_BY_INDEX))
-    print(len(ADJACENCIES_BY_INDEX))
-    try:
-        adj_table_index = ADJACENT_BY_INDEX[i1].index(i2)
-        return all((el[adj_table_index]
-                  for el in ADJACENCIES_BY_INDEX[i1]))
-    except ValueError:
-        return False
 
-for drawing in form_gen(1):
-    pp(data, drawing)
+# for drawing in form_gen(1):
+#     pp(data, drawing)
