@@ -35,3 +35,8 @@ def test_factorize():
     assert factorize(360) == [2, 2, 2, 3, 3, 5]
     assert factorize(1001) == [7, 11, 13]
     assert factorize(1010021) == [17, 19, 53, 59]
+
+
+if __name__ == '__main__':
+    test_primes()
+    test_factorize()
