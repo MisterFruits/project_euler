@@ -65,8 +65,8 @@ class GridTopologie(object):
         if len(indexes) < 2:
             return True
         else:
-            return _are_adjacents(indexes[0], indexes[1]) and \
-                   are_adjacents(indexes[1:])
+            return self._are_adjacents(indexes[0], indexes[1]) and \
+                   self.are_adjacents(indexes[1:])
 
     def _are_adjacents(self, i1, i2):
         try:
@@ -77,20 +77,14 @@ class GridTopologie(object):
             return False
 
     def form_gen(self, step, size=4):
-        for form_index in range(SIZE**2):
+        for form_index in range(self.size):
             next_form = [form_index+step*k for k in range(size)]
-            in_range = (0<=index<SIZE**2 for index in next_form)
+            in_range = (0<=index<self.size for index in next_form)
             if all(in_range) and self.are_adjacents(next_form):
                 yield next_form
 
 SIZE = 20
-
-
-
-
-
 data = [el.strip() for el in data.split()]
-assert len(data) == SIZE**2, 'Should be a {0}x{0} table'.format(SIZE)
 
 def pp(data, hl=None):
     print()
@@ -103,8 +97,24 @@ def linegen(data, line_nb, hl):
     for index in range(start, start+SIZE):
         yield '**' if index in hl else data[index]
 
+def get_value(data, hl):
+    res = 1
+    for index in hl:
+        res = res * int(data[index])
+    return res
 
+gt = GridTopologie(20, 20)
+form_pattern = [1, SIZE, SIZE+1, SIZE-1]
+drawings = []
+for pattern in form_pattern:
+    drawings.extend(gt.form_gen(pattern))
 
+max_index = -1
+max = -1
+for index, drawing in enumerate(drawings):
+    if get_value(data, drawing) > max:
+        max = get_value(data, drawing)
+        max_index = index
 
-# for drawing in form_gen(1):
-#     pp(data, drawing)
+print(get_value(data, drawings[max_index]))
+pp(data, drawings[max_index])
